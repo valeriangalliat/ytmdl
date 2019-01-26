@@ -1,6 +1,6 @@
 {
   "name": "ytmdl",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "YouTube Music downloader.",
   "homepage": "https://github.com/valeriangalliat/ytmdl",
   "bugs": "https://github.com/valeriangalliat/ytmdl/issues",
@@ -18,6 +18,9 @@
     "youtube-music.js",
     "ytmdl"
   ],
+  "bin": {
+    "ytmdl": "ytmdl"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/valeriangalliat/ytmdl.git"
