@@ -1,0 +1,40 @@
+{
+  "name": "ytmdl",
+  "version": "1.0.0",
+  "description": "YouTube Music downloader.",
+  "homepage": "https://github.com/valeriangalliat/ytmdl",
+  "bugs": "https://github.com/valeriangalliat/ytmdl/issues",
+  "license": "Unlicense",
+  "author": {
+    "name": "Valérian Galliat",
+    "url": "https://val.codejam.info/"
+  },
+  "files": [
+    "README.md",
+    "UNLICENSE",
+    "cli.js",
+    "index.js",
+    "progress.js",
+    "youtube-music.js",
+    "ytmdl"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valeriangalliat/ytmdl.git"
+  },
+  "scripts": {
+    "lint": "standard"
+  },
+  "dependencies": {
+    "ascii-progress": "^1.0.5",
+    "docopt": "^0.6.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "node-id3": "^0.1.5",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "ytdl-core": "^0.24.0"
+  },
+  "devDependencies": {
+    "standard": "^12.0.0"
+  }
+}
