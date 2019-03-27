@@ -1,6 +1,6 @@
 const request = require('request-promise')
 
-const entityUrl = 'https://music.youtube.com/youtubei/v1/music/entity_browse'
+const browseUrl = 'https://music.youtube.com/youtubei/v1/music/browse'
 
 // Make sniffer happy.
 const userAgent = 'AppleWebKit Chrome/999'
@@ -19,7 +19,7 @@ function findConfig (html) {
   return JSON.parse(html)
 }
 
-async function getEntity (url) {
+async function browse (url) {
   const html = await request({
     url,
     headers: { 'user-agent': userAgent }
@@ -28,15 +28,15 @@ async function getEntity (url) {
   const config = findConfig(html)
 
   const key = config.PLAYER_CONFIG.args.innertube_api_key
-  const { musicEntityBrowseEndpoint } = JSON.parse(config.INITIAL_ENDPOINT)
+  const { browseEndpoint } = JSON.parse(config.INITIAL_ENDPOINT)
 
   const body = Object.assign({
     context: dummyContext
-  }, musicEntityBrowseEndpoint)
+  }, browseEndpoint)
 
   return request({
     method: 'POST',
-    url: entityUrl,
+    url: browseUrl,
     qs: {
       alt: 'json',
       key
@@ -48,15 +48,15 @@ async function getEntity (url) {
   })
 }
 
-function indexPayloads (entity) {
+function indexMutations (mutations) {
   const index = {}
 
-  for (const payload of entity.payload.payloads) {
+  for (const { entityKey, payload } of mutations) {
+    // Normally there's ony one key
     for (const key of Object.keys(payload)) {
-      const item = payload[key]
       index[key] = index[key] || {}
-      index[key][item.id] = item
-      index[item.id] = item
+      index[key][entityKey] = payload[key]
+      index[entityKey] = payload[key]
     }
   }
 
@@ -64,14 +64,15 @@ function indexPayloads (entity) {
 }
 
 async function getAlbum (url) {
-  const entity = await getEntity(url)
-  const index = indexPayloads(entity)
+  const browseData = await browse(url)
+  const { mutations } = browseData.frameworkUpdates.entityBatchUpdate
+  const index = indexMutations(mutations)
 
-  if (!index.albumRelease) {
+  if (!index.musicAlbumRelease) {
     throw new Error('No album release found for this entity.')
   }
 
-  const album = index.albumRelease[Object.keys(index.albumRelease)[0]]
+  const album = index.musicAlbumRelease[Object.keys(index.musicAlbumRelease)[0]]
 
   album.primaryArtists = album.primaryArtists.map(id => index[id])
   album.details = index[album.details]
@@ -84,6 +85,6 @@ async function getAlbum (url) {
   return album
 }
 
-exports.getEntity = getEntity
-exports.indexPayloads = indexPayloads
+exports.browse = browse
+exports.indexMutations = indexMutations
 exports.getAlbum = getAlbum
