@@ -13,6 +13,10 @@ const unlink = promisify(fs.unlink)
 const writeId3 = promisify((...args) => id3.write(...args))
 
 async function fetchThumbnail (album, file) {
+  if (fs.existsSync(file)) {
+    return file
+  }
+
   const { thumbnails } = album.thumbnailDetails
   const thumbnail = thumbnails[thumbnails.length - 1]
 
@@ -78,6 +82,10 @@ async function tagTrack (track, image, file) {
 async function fetchTrack (track, bar, thumbnailPromise, baseFile, url) {
   const format = 'mp3'
   const destFile = `${baseFile}.${format}`
+
+  if (fs.existsSync(destFile)) {
+    return
+  }
 
   bar.reset()
   bar.tag('action', 'downloading')
